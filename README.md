@@ -1,2 +1,2 @@
-# iterator
-Chainable iterator with rich api and accurate type inference.
+# Iterator
+Iterator that is chainable, has rich api to suite any needs, and has accurate type inference for its api.
