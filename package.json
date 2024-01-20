@@ -1,0 +1,49 @@
+{
+  "name": "iterator-js",
+  "version": "1.0.0",
+  "description": "Iterator utility class",
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/index.umd.cjs",
+  "module": "./dist/index.es.js",
+  "exports": {
+    ".": {
+      "import": "./dist/index.es.js",
+      "require": "./dist/index.umd.cjs"
+    }
+  },
+  "scripts": {
+    "test": "vitest run",
+    "test:chromium": "vitest run --browser.name=chromium --browser.provider=playwright --browser.headless",
+    "test:webkit": "vitest run --browser.name=webkit --browser.provider=playwright --browser.headless",
+    "test:firefox": "vitest run --browser.name=firefox --browser.provider=playwright --browser.headless",
+    "build": "npx vite build",
+    "prepare": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gidra5/iterator-js.git"
+  },
+  "keywords": [
+    "iterator",
+    "utility"
+  ],
+  "author": "Roman Khranovskiy",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/gidra5/iterator-js/issues"
+  },
+  "homepage": "https://github.com/gidra5/iterator-js#readme",
+  "devDependencies": {
+    "@fast-check/vitest": "^0.0.9",
+    "@metarhia/iterator": "^1.0.0-alpha3",
+    "@types/node": "^20.11.5",
+    "@vitest/coverage-istanbul": "^1.2.1",
+    "@vitest/ui": "^1.2.1",
+    "fast-check": "^3.15.0",
+    "typescript": "^5.3.3",
+    "vitest": "^1.2.1"
+  }
+}
