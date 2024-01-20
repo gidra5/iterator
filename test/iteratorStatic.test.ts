@@ -1,6 +1,6 @@
 import { describe, expect } from 'vitest';
 import { it, fc, test } from '@fast-check/vitest';
-import Iterator from '../src';
+import { Iterator } from '../src';
 
 describe.concurrent('iterator', () => {
   const smallNat = fc.nat({ max: 20_000 });

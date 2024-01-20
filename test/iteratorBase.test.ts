@@ -1,6 +1,6 @@
 import { describe, expect, vi } from 'vitest';
 import { it, fc } from '@fast-check/vitest';
-import Iterator from '../src';
+import { Iterator }  from '../src';
 
 describe.concurrent('iterator', () => {
   it.concurrent.prop([fc.array(fc.nat())])('Iterator is Iterable', (array) => {

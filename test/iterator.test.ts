@@ -1,6 +1,6 @@
 import { describe, expect, vi } from 'vitest';
 import { it, fc, test } from '@fast-check/vitest';
-import Iterator from '../src';
+import { Iterator } from '../src';
 import { identity } from '../src/utils.js';
 
 describe.concurrent('iterator', () => {

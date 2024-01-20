@@ -1,5 +1,5 @@
 import { describe, bench as _bench, afterEach } from 'vitest';
-import Iterator from '../src';
+import { Iterator } from '../src';
 import MetarhiaIterator from '@metarhia/iterator';
 
 afterEach(async () => {
