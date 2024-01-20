@@ -12,7 +12,7 @@ export type Pred<A extends number> = TupleN<A> extends [...infer B, infer _]
   : A;
 
 export type RecordKey = keyof any;
-export type RecordEntry = [RecordKey, unknown];
+export type RecordEntry<T = unknown> = [RecordKey, T];
 export type IteratorInterface<T, TReturn = any, TNext = unknown> = Iterator<
   T,
   TReturn,

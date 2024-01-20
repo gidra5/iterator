@@ -700,6 +700,10 @@ export class Iterator<T> implements Iterable<T> {
       .map(spread((x, i) => x / (i + 1)));
   }
 
+  mapValues<U, V>(this: Iterator<RecordEntry<U>>, map: (x: U) => V) {
+    return this.map(([key, value]) => [key, map(value)] as RecordEntry<V>);
+  }
+
   count() {
     return this.reduce((acc) => acc + 1, 0);
   }
