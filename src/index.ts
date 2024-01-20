@@ -192,7 +192,7 @@ class SamplesIterator<T> implements IteratorInterface<T> {
   }
 }
 
-export default class Iterator<T> implements Iterable<T> {
+export class Iterator<T> implements Iterable<T> {
   private constructor(private getIterator: () => IteratorInterface<T>) {}
 
   [Symbol.iterator]() {
