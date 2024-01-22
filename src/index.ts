@@ -704,6 +704,18 @@ export class Iterator<T> implements Iterable<T> {
     return this.map(([key, value]) => [key, map(value)] as RecordEntry<V>);
   }
 
+  filterValues<U>(
+    this: Iterator<RecordEntry<U>>,
+    pred: (x: U) => boolean
+  ): Iterator<RecordEntry<U>>;
+  filterValues<U, V extends U>(
+    this: Iterator<RecordEntry<U>>,
+    pred: (x: U) => x is V
+  ): Iterator<RecordEntry<V>>;
+  filterValues<U>(this: Iterator<RecordEntry<U>>, pred: (x: U) => boolean) {
+    return this.filter(([_, value]) => pred(value));
+  }
+
   count() {
     return this.reduce((acc) => acc + 1, 0);
   }
