@@ -700,18 +700,21 @@ export class Iterator<T> implements Iterable<T> {
       .map(spread((x, i) => x / (i + 1)));
   }
 
-  mapValues<U, V>(this: Iterator<RecordEntry<U>>, map: (x: U) => V) {
-    return this.map(([key, value]) => [key, map(value)] as RecordEntry<V>);
+  mapValues<U, V, E extends RecordEntry<U>>(
+    this: Iterator<E>,
+    map: (x: U) => V
+  ) {
+    return this.map(([key, value]) => [key, map(value)] as [E[0], V]);
   }
 
-  filterValues<U>(
-    this: Iterator<RecordEntry<U>>,
+  filterValues<U, E extends RecordEntry<U>>(
+    this: Iterator<E>,
     pred: (x: U) => boolean
-  ): Iterator<RecordEntry<U>>;
-  filterValues<U, V extends U>(
-    this: Iterator<RecordEntry<U>>,
+  ): Iterator<[E[0], U]>;
+  filterValues<U, V extends U, E extends RecordEntry<U>>(
+    this: Iterator<E>,
     pred: (x: U) => x is V
-  ): Iterator<RecordEntry<V>>;
+  ): Iterator<[E[0], V]>;
   filterValues<U>(this: Iterator<RecordEntry<U>>, pred: (x: U) => boolean) {
     return this.filter(([_, value]) => pred(value));
   }
