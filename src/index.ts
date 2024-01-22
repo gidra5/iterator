@@ -713,10 +713,8 @@ export class Iterator<T> implements Iterable<T> {
   }
 
   power<N extends number>(n: N): Iterator<TupleN<N, T>>;
-  power(n: number): Iterator<T[]> {
-    return Iterator.product(...Iterator.repeat(this).take(n)).map(
-      (t) => t.flat(Infinity) as T[]
-    );
+  power(this: Iterator<T>, n: number): Iterator<T[]> {
+    return Iterator.product(...Iterator.repeat(this).take(n));
   }
 
   zip<U extends Iterable<unknown>[]>(...iterables: U) {
