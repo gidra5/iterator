@@ -3,6 +3,14 @@ import { it, fc } from '@fast-check/vitest';
 import { Iterator } from '../src';
 
 describe.concurrent('iterator', () => {
+  it.concurrent.prop([fc.dictionary(fc.string(), fc.anything())])(
+    'Iterator.iterEntries.toObject',
+    (dict) => {
+      const actual = Iterator.iterEntries(dict).toObject();
+      expect(actual).toEqual(dict);
+    }
+  );
+
   it.concurrent.prop([fc.array(fc.tuple(fc.string(), fc.anything()))])(
     'Iterator.toObject',
     (array) => {
@@ -25,7 +33,7 @@ describe.concurrent('iterator', () => {
   );
 
   it.concurrent.prop([fc.array(fc.anything())])('Iterator.toArray', (array) => {
-    const iterator = Iterator.iter(array);
-    expect(iterator.toArray()).toEqual(array);
+    const actual = Iterator.iter(array).toArray();
+    expect(actual).toEqual(array);
   });
 });

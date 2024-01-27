@@ -577,11 +577,11 @@ export class Iterator<T> implements Iterable<T> {
   // collection methods
 
   toArray() {
-    return [...this];
+    return Array.from(this);
   }
 
-  toObject<U extends RecordEntry>(this: Iterator<U>) {
-    return Object.fromEntries(this.toArray()) as FromEntries<U>;
+  toObject<U extends RecordEntry>(this: Iterator<U>): FromEntries<U> {
+    return Object.fromEntries(this) as FromEntries<U>;
   }
 
   toMap<K, V>(this: Iterator<[K, V]>) {
