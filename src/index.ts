@@ -354,6 +354,41 @@ export class Iterator<T> implements Iterable<T> {
     );
   }
 
+  sorted(_compare?: (a: T, b: T) => number): Iterator<T> {
+    // sort number values, then string values, then by type names
+    const defaultCompare = (a: T, b: T) =>
+      typeof a === 'number' && typeof b === 'number'
+        ? a - b
+        : typeof a === 'string' && typeof b === 'string'
+        ? a.localeCompare(b)
+        : (typeof a).localeCompare(typeof b);
+    const compare = _compare ?? defaultCompare;
+    const buffer: T[] = [];
+    let done = false;
+    const findInsertIndex = (x: T) => {
+      let low = 0;
+      let high = buffer.length;
+      while (low < high) {
+        const mid = Math.floor((low + high) / 2);
+        if (compare!(buffer[mid], x) < 0) low = mid + 1;
+        else high = mid;
+      }
+      return low;
+    };
+    const it = this;
+    const gen = function* () {
+      // that's O(n+log(n)) btw
+      // collecting all items to a sorted array
+      // and then yielding it
+      for (const item of it) {
+        buffer.splice(findInsertIndex(item), 0, item);
+      }
+      done = true;
+      yield* buffer;
+    };
+    return new Iterator(() => (done ? buffer[Symbol.iterator]() : gen()));
+  }
+
   // static methods
 
   static rotations<T>(items: T[]) {
