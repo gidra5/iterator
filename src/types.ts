@@ -66,8 +66,4 @@ export type Product<T extends Iterable<unknown>[]> = T extends [
 export type FromEntries<T extends RecordEntry> = {
   [K in T[0]]: T extends [K, infer V] ? V : never;
 };
-export type ToEntries<T> = T extends Record<infer _K, any>
-  ? _K extends infer K
-    ? [K, T[_K & K]]
-    : never
-  : never;
+export type ToEntries<T> = { [K in keyof T]: [K, T[K]] }[keyof T];
