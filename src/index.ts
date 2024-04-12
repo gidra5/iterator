@@ -15,6 +15,7 @@ import {
 } from './types';
 import { identity, isEqual, spread } from './utils';
 export { spread } from './utils';
+const sorter = (a: number, b: number): number => a - b;
 
 const done = { done: true } as { done: true; value: undefined };
 
@@ -491,7 +492,7 @@ export class Iterator<T> implements Iterable<T> {
     const range = Iterator.natural(items.length).toArray();
 
     return Iterator.permutation(range, size).filterMap((indices) => {
-      if (isEqual(indices, indices.slice().sort()))
+      if (isEqual(indices, indices.slice().sort(sorter)))
         return indices.map((i) => items[i]);
     });
   }
@@ -500,7 +501,7 @@ export class Iterator<T> implements Iterable<T> {
     return Iterator.natural(items.length)
       .power(size)
       .filterMap((indices) => {
-        if (isEqual(indices, indices.slice().sort()))
+        if (isEqual(indices, indices.slice().sort(sorter)))
           return indices.map((i) => items[i]);
       });
   }
