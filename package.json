@@ -1,6 +1,6 @@
 {
   "name": "iterator-js",
-  "version": "1.3.3",
+  "version": "1.3.4",
   "description": "Iterator utility class",
   "type": "module",
   "files": [
@@ -12,7 +12,8 @@
   "exports": {
     ".": {
       "import": "./dist/index.es.js",
-      "require": "./dist/index.umd.cjs"
+      "require": "./dist/index.umd.cjs",
+      "types": "./dist/index.d.ts"
     }
   },
   "scripts": {
