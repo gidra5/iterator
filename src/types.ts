@@ -62,3 +62,40 @@ export type FromEntries<T extends RecordEntry> = {
   [K in T[0]]: T extends [K, infer V] ? V : never;
 };
 export type ToEntries<T> = { [K in keyof T]: [K, T[K]] }[keyof T];
+
+declare global {
+  interface Iterator<T> {
+    map<R = T>(mapper: (value: T, index: number) => R): Iterator<R>;
+    filter<R extends T = T>(
+      filterer: (value: T, index: number) => value is R
+    ): Iterator<R>;
+    filter(filterer: (value: T, index: number) => unknown): Iterator<T>;
+    take(limit: number): Iterator<T>;
+    drop(limit: number): Iterator<T>;
+    flatMap<R = T>(
+      mapper: (value: T, index: number) => Iterator<R> | Iterable<R>
+    ): Iterator<R>;
+    forEach(fn: (value: T, index: number) => void): void;
+    toArray(): T[];
+    reduce(reducer: (previousValue: T, currentValue: T, index: number) => T): T;
+    reduce(
+      reducer: (previousValue: T, currentValue: T, index: number) => T,
+      initialValue: T
+    ): T;
+    reduce<U>(
+      reducer: (previousValue: U, currentValue: T, index: number) => U,
+      initialValue: U
+    ): U;
+    some(fn: (value: T, index: number) => unknown): boolean;
+    every(fn: (value: T, index: number) => unknown): boolean;
+    find(fn: (value: T, index: number) => unknown): T | undefined;
+    [Symbol.iterator](): Iterator<T>;
+  }
+  interface IteratorConstructor {
+    readonly prototype: Iterator<any>;
+    new <T = unknown>(): Iterator<T>;
+    from<T>(iterable: Iterator<T> | Iterable<T>): Iterator<T>;
+  }
+
+  var Iterator: IteratorConstructor;
+}

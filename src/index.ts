@@ -14,16 +14,19 @@ import {
 } from './types';
 import { identity, isEqual, spread } from './utils';
 export { spread } from './utils';
+
 const sorter = (a: number, b: number): number => a - b;
 
 const done = { done: true } as { done: true; value: undefined };
 
-class RangeIteratorUp implements Iterator<number> {
+class RangeIteratorUp extends Iterator<number> {
   constructor(
     private value: number,
     private end: number,
     private step: number
-  ) {}
+  ) {
+    super();
+  }
 
   next() {
     const value = this.value;
@@ -33,12 +36,14 @@ class RangeIteratorUp implements Iterator<number> {
   }
 }
 
-class RangeIteratorDown implements Iterator<number> {
+class RangeIteratorDown extends Iterator<number> {
   constructor(
     private value: number,
     private end: number,
     private step: number
-  ) {}
+  ) {
+    super();
+  }
 
   next() {
     const value = this.value;
@@ -48,68 +53,24 @@ class RangeIteratorDown implements Iterator<number> {
   }
 }
 
-class RepeatIterator<T> implements Iterator<T> {
-  constructor(private value: T) {}
+class RepeatIterator<T> extends Iterator<T> {
+  constructor(private value: T) {
+    super();
+  }
 
   next() {
     return this as any;
   }
 }
 
-class MapIterator<T, U> implements Iterator<U> {
-  constructor(private base: Iterator<T>, private mapper: (x: T) => U) {}
-
-  next() {
-    const value = this.base.next();
-    if (value.done) return done;
-    return { done: false as const, value: this.mapper(value.value) };
-  }
-}
-
-class FilterIterator<T> implements Iterator<T> {
-  constructor(
-    private base: Iterator<T>,
-    private predicate: (x: T) => boolean
-  ) {}
-
-  next() {
-    for (let value; !(value = this.base.next()).done; ) {
-      if (!this.predicate(value.value)) continue;
-      return value;
-    }
-    return done;
-  }
-}
-
-class FlatMapIterator<T, U> implements Iterator<T> {
-  private nested: Iterator<T> | null = null;
-
-  constructor(
-    private base: Iterator<U>,
-    private mapper: (x: U) => Iterable<T>
-  ) {}
-
-  next(): IteratorResult<T> {
-    if (!this.nested) {
-      const next = this.base.next();
-      if (next.done) return next;
-      this.nested = this.mapper(next.value)[Symbol.iterator]();
-    }
-
-    const next = this.nested!.next();
-    if (!next.done) return next;
-
-    this.nested = null;
-    return this.next();
-  }
-}
-
-class AccumulateIterator<T> implements Iterator<T> {
+class AccumulateIterator<T> extends Iterator<T> {
   constructor(
     private base: Iterator<T>,
     private reducer: (acc: T | undefined, input: T) => T,
     private acc: T | undefined
-  ) {}
+  ) {
+    super();
+  }
 
   next() {
     if (this.acc === undefined) {
@@ -127,7 +88,7 @@ class AccumulateIterator<T> implements Iterator<T> {
   }
 }
 
-class CachedIterator<T> implements Iterator<T> {
+class CachedIterator<T> extends Iterator<T> {
   private index = 0;
 
   constructor(
@@ -135,7 +96,9 @@ class CachedIterator<T> implements Iterator<T> {
     private buffer: T[],
     private consumed: boolean,
     private setConsumed: () => void
-  ) {}
+  ) {
+    super();
+  }
 
   next() {
     if (this.index < this.buffer.length) {
@@ -158,11 +121,12 @@ class CachedIterator<T> implements Iterator<T> {
   }
 }
 
-class SamplesIterator<T> implements Iterator<T> {
+class SamplesIterator<T> extends Iterator<T> {
   private buffer: IteratorResult<T>[];
   private consumed = false;
 
   constructor(private base: Iterator<T>, private bufferSize: number) {
+    super();
     this.buffer = new Array(bufferSize);
   }
 
@@ -226,32 +190,21 @@ class _Iterator<T> implements Iterable<T> {
   reduce(reducer: (acc: T | undefined, input: T) => T): T | undefined;
   reduce<U>(reducer: (acc: U, input: T) => U, initial?: U): U;
   reduce(reducer: (acc: any, input: T) => any, initial?: any) {
-    let it = this.getIterator();
-    let acc = initial;
-    if (acc === undefined) {
-      const next = it.next();
-      if (next.done) return;
-      acc = next.value;
-    }
-
-    for (let item; !(item = it.next()).done; ) {
-      acc = reducer(acc, item.value);
-    }
-    return acc;
+    return this.getIterator().reduce(reducer, initial);
   }
 
   filter(pred: (x: T) => boolean): _Iterator<T>;
   filter<U extends T>(pred: (x: T) => x is U): _Iterator<U>;
   filter(pred: (x: T) => boolean) {
-    return new _Iterator(() => new FilterIterator(this.getIterator(), pred));
+    return new _Iterator(() => this.getIterator().filter(pred));
   }
 
   map<U>(map: (x: T) => U) {
-    return new _Iterator<U>(() => new MapIterator(this.getIterator(), map));
+    return new _Iterator(() => this.getIterator().map(map));
   }
 
   flatMap<U>(map: (x: T) => Iterable<U>) {
-    return new _Iterator<U>(() => new FlatMapIterator(this.getIterator(), map));
+    return new _Iterator<U>(() => this.getIterator().flatMap(map));
   }
 
   flat<U, D extends number>(
@@ -298,27 +251,11 @@ class _Iterator<T> implements Iterable<T> {
   }
 
   take(count: number) {
-    const it = this;
-    const gen = function* () {
-      if (count <= 0) return;
-      for (const item of it) {
-        yield item;
-        count--;
-        if (count <= 0) return;
-      }
-    };
-    return new _Iterator(gen);
+    return new _Iterator(() => this.getIterator().take(count));
   }
 
   skip(count: number) {
-    if (count <= 0) return this;
-    const it = this;
-    const gen = () => {
-      const iterator = it.getIterator();
-      while (count > 0 && !iterator.next().done) count--;
-      return iterator;
-    };
-    return new _Iterator(gen);
+    return new _Iterator(() => this.getIterator().drop(count));
   }
 
   cycle() {
@@ -581,8 +518,7 @@ class _Iterator<T> implements Iterable<T> {
 
   static iter<T>(it: Iterable<T> | Iterator<T>): _Iterator<T> {
     if (it instanceof this) return it;
-    if (typeof it === 'object' && 'next' in it) return new _Iterator(() => it);
-    return new _Iterator(() => it[Symbol.iterator]());
+    return new _Iterator(() => Iterator.from(it));
   }
 
   static iterEntries<T extends Record<RecordKey, any>>(
@@ -612,7 +548,7 @@ class _Iterator<T> implements Iterable<T> {
   // collection methods
 
   toArray() {
-    return Array.from(this);
+    return this.getIterator().toArray();
   }
 
   toObject<U extends RecordEntry>(this: _Iterator<U>): FromEntries<U> {
@@ -716,15 +652,13 @@ class _Iterator<T> implements Iterable<T> {
   some(this: _Iterator<boolean>): boolean;
   some(pred: (x: T) => boolean): boolean;
   some(pred?: (x: T) => boolean) {
-    if (!pred) return !(this as _Iterator<boolean>).filter(identity).isEmpty();
-    return !this.filter(pred).isEmpty();
+    return this.getIterator().some(pred ?? Boolean);
   }
 
   every(this: _Iterator<boolean>): boolean;
   every(pred: (x: T) => boolean): boolean;
   every(pred?: (x: T) => boolean) {
-    if (!pred) return !this.some((x) => !x);
-    return !this.some((x) => !pred(x));
+    return this.getIterator().every(pred ?? Boolean);
   }
 
   avg(this: _Iterator<number>): _Iterator<number>;
@@ -933,7 +867,7 @@ class _Iterator<T> implements Iterable<T> {
   }
 
   find(pred: (x: T) => boolean) {
-    return this.filter(pred).first();
+    return this.getIterator().find(pred);
   }
 }
 
