@@ -163,7 +163,7 @@ class SamplesIterator<T> implements Iterator<T> {
   private consumed = false;
 
   constructor(private base: Iterator<T>, private bufferSize: number) {
-    this.buffer = new Array(bufferSize);
+    this.buffer = new Array();
   }
 
   next() {
@@ -189,6 +189,7 @@ class SamplesIterator<T> implements Iterator<T> {
   }
 }
 
+// TODO: add docs
 class _Iterator<T> implements Iterable<T> {
   private constructor(private getIterator: () => Iterator<T>) {}
 
