@@ -455,6 +455,10 @@ class _Iterator<T> implements Iterable<T> {
     return _Iterator.random().map((x) => items[Math.floor(x * items.length)]);
   }
 
+  static shuffle<T>(items: T[]) {
+    return _Iterator.iter(items).samples(items.length).toArray();
+  }
+
   static randomInRange(min: number, max: number) {
     const delta = max - min;
     return _Iterator.random().map((x) => x * delta + min);
