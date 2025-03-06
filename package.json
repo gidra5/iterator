@@ -42,7 +42,7 @@
   "devDependencies": {
     "@fast-check/vitest": "^0.1.2",
     "@metarhia/iterator": "^1.0.0-alpha3",
-    "@types/node": "^20.14.10",
+    "@types/node": "^22.10.5",
     "@vitest/coverage-istanbul": "^2.0.2",
     "@vitest/ui": "^2.0.2",
     "fast-check": "^3.20.0",
